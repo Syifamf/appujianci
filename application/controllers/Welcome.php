@@ -21,17 +21,42 @@ class Welcome extends CI_Controller
      * map to /index.php/welcome/<method_name>
      * @see https://codeigniter.com/userguide3/general/urls.html
      */
-    public function index()
+    public function index() 
     {
-        //INI KOMENTAR
+        $this->load->helper('url');
+        if (isset($_POST['nama']) && isset($_POST['nim']) && isset($_POST['umur'])) {
+            $_SESSION['nama'] = $_POST['nama'];
+            $_SESSION['nim'] = $_POST['nim'];
+            $_SESSION['umur'] = $_POST['umur'];
+            redirect('Welcome/tampil');
+        }
+
         $blade = new Blade(VIEWPATH, APPPATH . 'cache');
         echo $blade->make('form', [])->render();
     }
 
     public function tampil()
     {
-        $nama = 'tata';
+        $nama = $_SESSION['nama'];
+        $nim = $_SESSION['nim'];
+        $umur = $_SESSION['umur'];
+        $status = '';
+
+        if ($umur >= 0) {
+            $status = 'Anak';
+        } elseif ($umur > 10) {
+            $status = 'Remaja';
+        } elseif ($umur > 20) {
+            $status = 'Dewasa';
+        } elseif ($umur > 30) {
+            $status = 'Tua';
+        }
+
+        session_unset();
+        session_destroy();
         $blade = new Blade(VIEWPATH, APPPATH . 'cache');
-        echo $blade->make('tampil', ['nama' => $nama])->render();
+        echo $blade->make('tampil', ['nama' => $nama, 'nim' => $nim, 'umur' => $umur, 'status' => $status])->render();
+
     }
+        
 }
